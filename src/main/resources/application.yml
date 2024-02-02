@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: classpath:config/oauth-config.yml
   h2:
     console:
       enabled: true
