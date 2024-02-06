@@ -1,5 +1,6 @@
 package com.example.oauth.config;
 
+import com.example.oauth.oauth.CustomOAuthUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private final CustomOAuthUserService customOAuthUserService;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -32,7 +34,8 @@ public class SecurityConfig {
                                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable);
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .oauth2Login(oauth -> oauth.userInfoEndpoint(endpoint -> endpoint.userService(customOAuthUserService)));
         return http.build();
 
     }
