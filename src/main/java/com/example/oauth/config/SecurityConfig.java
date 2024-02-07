@@ -1,6 +1,9 @@
 package com.example.oauth.config;
 
+import com.example.oauth.oauth.CustomAuthenticationFailureHandler;
+import com.example.oauth.oauth.CustomAuthenticationSuccessHandler;
 import com.example.oauth.oauth.CustomOAuthUserService;
+import com.example.oauth.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,17 +13,21 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final CustomOAuthUserService customOAuthUserService;
+    private final CustomAuthenticationSuccessHandler oAuthSuccessHandler;
+    private final CustomAuthenticationFailureHandler oAuthFailureHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/signup");
+                .requestMatchers("/oauth/**");
     }
 
     @Bean
@@ -35,8 +42,14 @@ public class SecurityConfig {
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .oauth2Login(oauth -> oauth.userInfoEndpoint(endpoint -> endpoint.userService(customOAuthUserService)));
-        return http.build();
+                .authorizeHttpRequests(authorize  -> authorize.anyRequest().authenticated())
+                .oauth2Login(oauth ->
+                        oauth.userInfoEndpoint(endpoint -> endpoint.userService(customOAuthUserService))
+                                .failureHandler(oAuthFailureHandler)
+                                .successHandler(oAuthSuccessHandler)
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+        return http.build();
     }
 }

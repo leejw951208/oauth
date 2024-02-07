@@ -1,4 +1,4 @@
-package com.example.oauth.user;
+package com.example.oauth.user.entity;
 
 import com.example.oauth.converter.OneWayEncryptConverter;
 import jakarta.persistence.*;
@@ -18,16 +18,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "t_user", indexes = {@Index(name = "idx_user_id", columnList = "user_id")})
+@Table(name = "t_user", indexes = {@Index(name = "idx_email", columnList = "email")})
 @Entity
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Comment("아이디")
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Comment("이메일")
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
     @Comment("비밀번호")
     @Convert(converter = OneWayEncryptConverter.class)
@@ -37,11 +37,6 @@ public class User {
     @Comment("이름")
     @Column(name = "name", nullable = false)
     private String name;
-
-    @Comment("주민등록번호")
-    @Convert(converter = OneWayEncryptConverter.class)
-    @Column(name = "reg_no", nullable = false)
-    private String regNo;
 
     @Comment("등록일자")
     @CreatedDate
