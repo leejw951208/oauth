@@ -20,7 +20,7 @@ public class OAuth2Attribute {
     private String provider;
 
     public static OAuth2Attribute of(String provider, String attributeKey, Map<String, Object> attributes) {
-        if ("ofKakao".equals(provider)) {
+        if ("kakao".equals(provider)) {
             return ofKakao(provider,"email", attributes);
         }
         throw new RuntimeException();
@@ -39,7 +39,7 @@ public class OAuth2Attribute {
     }
 
     // OAuth2User 객체에 넣어주기 위해서 Map으로 값들을 반환해준다.
-    Map<String, Object> convertToMap() {
+    public Map<String, Object> convertToMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("id", attributeKey);
         map.put("key", attributeKey);

@@ -1,9 +1,10 @@
 package com.example.oauth.config;
 
-import com.example.oauth.oauth.CustomAuthenticationFailureHandler;
-import com.example.oauth.oauth.CustomAuthenticationSuccessHandler;
-import com.example.oauth.oauth.CustomOAuthUserService;
+import com.example.oauth.oauth.handler.CustomAuthenticationFailureHandler;
+import com.example.oauth.oauth.handler.CustomAuthenticationSuccessHandler;
+import com.example.oauth.oauth.service.CustomOAuthUserService;
 import com.example.oauth.security.JwtAuthenticationFilter;
+import com.example.oauth.security.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,11 +24,12 @@ public class SecurityConfig {
     private final CustomAuthenticationSuccessHandler oAuthSuccessHandler;
     private final CustomAuthenticationFailureHandler oAuthFailureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/oauth/**");
+                .requestMatchers("/oauth/**", "/login", "/signup");
     }
 
     @Bean
@@ -47,8 +49,10 @@ public class SecurityConfig {
                         oauth.userInfoEndpoint(endpoint -> endpoint.userService(customOAuthUserService))
                                 .failureHandler(oAuthFailureHandler)
                                 .successHandler(oAuthSuccessHandler)
+                                .loginPage("/login")
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

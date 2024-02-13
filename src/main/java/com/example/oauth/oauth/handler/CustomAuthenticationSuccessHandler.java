@@ -1,6 +1,7 @@
-package com.example.oauth.oauth;
+package com.example.oauth.oauth.handler;
 
 import com.example.oauth.jwt.GeneratedTokenDto;
+import com.example.oauth.jwt.JwtProperties;
 import com.example.oauth.jwt.JwtProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,25 +28,14 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String email = oAuth2User.getAttribute("email");
         String provider = oAuth2User.getAttribute("provider");
         boolean isExist = Boolean.TRUE.equals(oAuth2User.getAttribute("exist"));
-        String targetUrl = null;
 
         if (isExist) {
             GeneratedTokenDto generatedTokenDto = jwtProvider.generateToken(authentication);
-            targetUrl = UriComponentsBuilder.fromUriString("/home")
-                    .queryParam("accessToken", generatedTokenDto.accessToken())
-                    .queryParam("refreshToken", generatedTokenDto.refreshToke())
-                    .build()
-                    .encode(StandardCharsets.UTF_8)
-                    .toUriString();
+            response.addHeader(JwtProperties.HEADER_STRING, "Access" + JwtProperties.TOKEN_PREFIX + generatedTokenDto.accessToken());
+            response.addHeader(JwtProperties.HEADER_STRING, "Refresh" + JwtProperties.TOKEN_PREFIX + generatedTokenDto.refreshToke());
+            response.sendRedirect("/home");
         } else {
-            targetUrl = UriComponentsBuilder.fromUriString("/home")
-                    .queryParam("email", email)
-                    .queryParam("refreshToken", provider)
-                    .build()
-                    .encode(StandardCharsets.UTF_8)
-                    .toUriString();
+            response.sendRedirect("/signup");
         }
-
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }

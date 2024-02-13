@@ -1,5 +1,6 @@
-package com.example.oauth.oauth;
+package com.example.oauth.oauth.service;
 
+import com.example.oauth.oauth.OAuth2Attribute;
 import com.example.oauth.user.entity.User;
 import com.example.oauth.user.entity.UserRoles;
 import com.example.oauth.user.repository.UserRepository;
@@ -46,13 +47,13 @@ public class CustomOAuthUserService implements OAuth2UserService<OAuth2UserReque
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                     userAttributeMap, "email"
             );
+        } else {
+            userAttributeMap.put("exist", true);
+            List<UserRoles> findRoles = userRolesRepository.findByUser(findUser.get());
+            List<SimpleGrantedAuthority> authorities = findRoles.stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().name()))
+                    .toList();
+            return new DefaultOAuth2User(authorities, userAttributeMap, "email");
         }
-
-        userAttributeMap.put("exist", true);
-        List<UserRoles> findRoles = userRolesRepository.findByUser(findUser.get());
-        List<SimpleGrantedAuthority> authorities = findRoles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().name()))
-                .toList();
-        return new DefaultOAuth2User(authorities, userAttributeMap, "email");
     }
 }
