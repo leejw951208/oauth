@@ -29,13 +29,5 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String provider = oAuth2User.getAttribute("provider");
         boolean isExist = Boolean.TRUE.equals(oAuth2User.getAttribute("exist"));
 
-        if (isExist) {
-            GeneratedTokenDto generatedTokenDto = jwtProvider.generateToken(authentication);
-            response.addHeader(JwtProperties.HEADER_STRING, "Access" + JwtProperties.TOKEN_PREFIX + generatedTokenDto.accessToken());
-            response.addHeader(JwtProperties.HEADER_STRING, "Refresh" + JwtProperties.TOKEN_PREFIX + generatedTokenDto.refreshToke());
-            response.sendRedirect("/home");
-        } else {
-            response.sendRedirect("/signup");
-        }
     }
 }

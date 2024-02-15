@@ -15,10 +15,7 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -41,19 +38,19 @@ public class CustomOAuthUserService implements OAuth2UserService<OAuth2UserReque
 
         Optional<User> findUser = userRepository.findByEmail(email);
 
+        List<SimpleGrantedAuthority> authorities;
+
         if (findUser.isEmpty()) {
             userAttributeMap.put("exist", false);
-            return new DefaultOAuth2User(
-                    Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                    userAttributeMap, "email"
-            );
+            authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
         } else {
             userAttributeMap.put("exist", true);
             List<UserRoles> findRoles = userRolesRepository.findByUser(findUser.get());
-            List<SimpleGrantedAuthority> authorities = findRoles.stream()
+            authorities = findRoles.stream()
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().name()))
                     .toList();
-            return new DefaultOAuth2User(authorities, userAttributeMap, "email");
         }
+
+        return new DefaultOAuth2User(authorities, userAttributeMap, "email");
     }
 }

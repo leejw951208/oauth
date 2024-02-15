@@ -29,7 +29,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/oauth/**", "/login","/login/**", "/signup");
+                .requestMatchers("/login","/home");
     }
 
     @Bean
@@ -47,9 +47,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize  -> authorize.anyRequest().authenticated())
                 .oauth2Login(oauth ->
                         oauth.userInfoEndpoint(endpoint -> endpoint.userService(customOAuthUserService))
-//                                .failureHandler(oAuthFailureHandler)
-//                                .successHandler(oAuthSuccessHandler)
-                                .loginPage("/login")
+                                .successHandler(oAuthSuccessHandler)
+                                .failureHandler(oAuthFailureHandler)
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
