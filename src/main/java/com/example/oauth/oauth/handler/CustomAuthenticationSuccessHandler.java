@@ -23,11 +23,13 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        GeneratedTokenDto generatedTokenDto = jwtProvider.generateToken(authentication);
 
-        String email = oAuth2User.getAttribute("email");
-        String provider = oAuth2User.getAttribute("provider");
-        boolean isExist = Boolean.TRUE.equals(oAuth2User.getAttribute("exist"));
+        String url = UriComponentsBuilder.fromUriString("http://localhost:8080/oauth2/redirect/" + generatedTokenDto.accessToken() + "/" + generatedTokenDto.refreshToke())
+                .build()
+                .encode(StandardCharsets.UTF_8)
+                .toUriString();
 
+        getRedirectStrategy().sendRedirect(request, response, url);
     }
 }

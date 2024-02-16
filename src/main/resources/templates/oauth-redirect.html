@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script th:inline="javascript">
+    const accessToken = [[${accessToken}]];
+    const refreshToken = [[${refreshToken}]];
+
+    window.localStorage.setItem("accessToken", accessToken);
+    window.localStorage.setItem("refreshToken", refreshToken);
+
+    $.ajax({
+        url: ""
+    })
+</script>
+</body>
+</html>

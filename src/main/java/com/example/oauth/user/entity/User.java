@@ -31,12 +31,16 @@ public class User {
 
     @Comment("비밀번호")
     @Convert(converter = OneWayEncryptConverter.class)
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @Comment("이름")
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Comment("소셜 로그인")
+    @Column(name = "provider", nullable = false)
+    private String provider;
 
     @Comment("등록일자")
     @CreatedDate

@@ -36,14 +36,14 @@ public class JwtProvider {
                 .claim("auth", authorities)
                 .signWith(secretKey)
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plus(JwtProperties.ACCESS_TOKEN_EXPIRATION_HOURS, ChronoUnit.HOURS)))
+                .expiration(Date.from(Instant.now().plus(JwtProperties.ACCESS_TOKEN_EXP_HOURS, ChronoUnit.HOURS)))
                 .compact();
 
         String refreshToken = Jwts.builder()
                 .subject(authentication.getName())
                 .signWith(secretKey)
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plus(JwtProperties.REFRESH_TOKEN_EXPIRATION_HOURS, ChronoUnit.HOURS)))
+                .expiration(Date.from(Instant.now().plus(JwtProperties.REFRESH_TOKEN_EXP_HOURS, ChronoUnit.HOURS)))
                 .compact();
 
         return new GeneratedTokenDto(accessToken, refreshToken);
