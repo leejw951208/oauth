@@ -5,16 +5,8 @@
     <title>Title</title>
 </head>
 <body>
-<script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script th:inline="javascript">
-    const accessToken = [[${accessToken}]];
-    const refreshToken = [[${refreshToken}]];
-
-    window.localStorage.setItem("accessToken", accessToken);
-    window.localStorage.setItem("refreshToken", refreshToken);
-
-    console.log(accessToken);
-    console.log(refreshToken);
+    location.href = "/home";
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-package com.example.oauth.oauth;
+package com.example.oauth.oauth.controller;
 
 import com.example.oauth.jwt.JwtProperties;
 import jakarta.servlet.http.Cookie;
@@ -26,6 +26,6 @@ public class OauthController {
         cookie2.setPath("/");
         response.addCookie(cookie2);
 
-        return "redirect:/home";
+        return "oauth-redirect";
     }
 }
