@@ -25,7 +25,9 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         GeneratedTokenDto generatedTokenDto = jwtProvider.generateToken(authentication);
 
-        String url = UriComponentsBuilder.fromUriString("http://localhost:8080/oauth2/redirect/" + generatedTokenDto.accessToken() + "/" + generatedTokenDto.refreshToke())
+        String url = UriComponentsBuilder.fromUriString("http://localhost:8080/oauth2/redirect")
+                .queryParam("accessToken", generatedTokenDto.accessToken())
+                .queryParam("refreshToken", generatedTokenDto.refreshToke())
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();
