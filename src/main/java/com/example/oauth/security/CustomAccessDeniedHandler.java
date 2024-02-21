@@ -21,11 +21,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("code", 403);
-        map.put("message", "Forbidden");
-
-        response.getWriter().print(map);
+        response.sendRedirect("/login");
     }
 }

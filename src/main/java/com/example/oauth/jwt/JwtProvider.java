@@ -1,5 +1,6 @@
 package com.example.oauth.jwt;
 
+import com.example.oauth.common.TokenProperties;
 import com.example.oauth.security.principal.PrincipalDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
-    private final SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(JwtProperties.SECRET));
+    private final SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(TokenProperties.JWT_SECRET));
 
     public GeneratedTokenDto generateToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
@@ -36,14 +37,14 @@ public class JwtProvider {
                 .claim("auth", authorities)
                 .signWith(secretKey)
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plus(JwtProperties.ACCESS_TOKEN_EXP_TIME, ChronoUnit.HOURS)))
+                .expiration(Date.from(Instant.now().plus(TokenProperties.TOKEN_EXP_3600, ChronoUnit.HOURS)))
                 .compact();
 
         String refreshToken = Jwts.builder()
                 .subject(authentication.getName())
                 .signWith(secretKey)
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plus(JwtProperties.REFRESH_TOKEN_EXP_TIME, ChronoUnit.HOURS)))
+                .expiration(Date.from(Instant.now().plus(TokenProperties.TOKEN_EXP_86400, ChronoUnit.HOURS)))
                 .compact();
 
         return new GeneratedTokenDto(accessToken, refreshToken);

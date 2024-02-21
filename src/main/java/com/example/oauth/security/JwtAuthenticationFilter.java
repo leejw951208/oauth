@@ -1,6 +1,6 @@
 package com.example.oauth.security;
 
-import com.example.oauth.jwt.JwtProperties;
+import com.example.oauth.common.TokenProperties;
 import com.example.oauth.jwt.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,7 +15,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -29,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Map<String, String> cookieMap = Arrays.stream(request.getCookies())
                 .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
 
-        String accessToken = cookieMap.getOrDefault(JwtProperties.ACCESS, "empty");
+        String accessToken = cookieMap.getOrDefault(TokenProperties.ACCESS_TOKEN, "empty");
         if (!"empty".equals(accessToken)) {
             jwtProvider.verify(accessToken);
 

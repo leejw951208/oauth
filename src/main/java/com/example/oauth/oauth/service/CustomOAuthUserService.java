@@ -39,6 +39,9 @@ public class CustomOAuthUserService implements OAuth2UserService<OAuth2UserReque
         String email = (String) userAttributeMap.get("email");
         String provider = (String) userAttributeMap.get("provider");
         String name = (String) userAttributeMap.get("name");
+        String providerToken = userRequest.getAccessToken().getTokenValue();
+
+        userAttributeMap.put("providerToken", providerToken);
 
         Optional<User> findUser = userRepository.findByEmail(email);
 
@@ -63,7 +66,7 @@ public class CustomOAuthUserService implements OAuth2UserService<OAuth2UserReque
         } else {
             List<UserRoles> findRoles = userRolesRepository.findByUser(findUser.get());
             authorities = findRoles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().name()))
+                    .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
                     .toList();
         }
 

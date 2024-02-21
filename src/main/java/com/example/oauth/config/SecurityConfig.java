@@ -3,21 +3,16 @@ package com.example.oauth.config;
 import com.example.oauth.oauth.handler.CustomAuthenticationFailureHandler;
 import com.example.oauth.oauth.handler.CustomAuthenticationSuccessHandler;
 import com.example.oauth.oauth.service.CustomOAuthUserService;
-import com.example.oauth.security.CustomAccessDeniedHandler;
-import com.example.oauth.security.CustomAuthenticationEntryPoint;
-import com.example.oauth.security.JwtAuthenticationFilter;
-import com.example.oauth.security.JwtExceptionFilter;
+import com.example.oauth.security.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -30,6 +25,7 @@ public class SecurityConfig {
     private final JwtExceptionFilter jwtExceptionFilter;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -41,12 +37,17 @@ public class SecurityConfig {
                                 httpSecuritySessionManagementConfigurer
                                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(
+                        httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
+                                .clearAuthentication(true)
+                                .invalidateHttpSession(true)
+                                .logoutSuccessHandler(customLogoutSuccessHandler)
+                        )
                 .authorizeHttpRequests(authorize ->
                         authorize.requestMatchers("/login", "/login/**", "/oauth2/**").permitAll()
-                                .requestMatchers("/home").hasRole("USER")
-                                .anyRequest().hasRole("ADMIN")
+                                .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
