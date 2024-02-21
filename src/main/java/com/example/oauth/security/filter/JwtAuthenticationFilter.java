@@ -1,4 +1,4 @@
-package com.example.oauth.security;
+package com.example.oauth.security.filter;
 
 import com.example.oauth.common.TokenProperties;
 import com.example.oauth.jwt.JwtProvider;

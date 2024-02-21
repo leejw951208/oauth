@@ -1,4 +1,4 @@
-package com.example.oauth.security;
+package com.example.oauth.security.handler;
 
 import com.example.oauth.common.TokenProperties;
 import com.example.oauth.oauth.OAuthEnum;

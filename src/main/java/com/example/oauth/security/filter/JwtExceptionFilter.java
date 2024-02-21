@@ -1,4 +1,4 @@
-package com.example.oauth.security;
+package com.example.oauth.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
